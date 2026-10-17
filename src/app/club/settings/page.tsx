@@ -1,33 +1,30 @@
 import type { Metadata } from "next";
+import { ActivityFeed } from "@/components/club/activity-feed";
+import { ClubDetailsPanel } from "@/components/settings/club-details-panel";
+import { GamesPanel } from "@/components/settings/games-panel";
 import { InvitePanel, type InvitationView } from "@/components/settings/invite-panel";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { MembersPanel } from "@/components/settings/members-panel";
+import { ScoringPanel } from "@/components/settings/scoring-panel";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/feedback";
+import { getGameTypes, getMembers, getScoringRules, memberLookup } from "@/lib/data/club-data";
+import { getActivity } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
 import { readPublicEnv } from "@/lib/env";
+import { DEFAULT_SCORING_RULE } from "@/lib/domain/scoring";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Club settings" };
 
-export default async function SettingsPage() {
-  const { club, isAdmin } = await requireClub();
+async function getInvitations(clubId: string): Promise<InvitationView[]> {
+  // RLS only returns invitations to owners and admins.
   const supabase = await createSupabaseServerClient();
-  const [{ data: memberRows }, { data: inviteRows }] = await Promise.all([
-    supabase
-      .from("club_memberships")
-      .select("role, profile:profiles(id, username, display_name, avatar_url, emblem)")
-      .eq("club_id", club.id),
-    // RLS only returns invitations to owners and admins.
-    supabase
-      .from("club_invitations")
-      .select("id, code, expires_at, max_uses, use_count, revoked_at")
-      .eq("club_id", club.id)
-      .order("created_at", { ascending: false }),
-  ]);
-  type MemberRow = { role: string; profile: { id: string; username: string; display_name: string; avatar_url: string | null; emblem: string } };
-  const members = ((memberRows ?? []) as unknown as MemberRow[]).sort((a, b) => a.profile.display_name.localeCompare(b.profile.display_name));
-  const invitations: InvitationView[] = (inviteRows ?? []).map((row) => ({
+  const { data } = await supabase
+    .from("club_invitations")
+    .select("id, code, expires_at, max_uses, use_count, revoked_at")
+    .eq("club_id", clubId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map((row) => ({
     id: row.id as string,
     code: row.code as string,
     expiresAt: row.expires_at as string | null,
@@ -35,37 +32,94 @@ export default async function SettingsPage() {
     useCount: row.use_count as number,
     revokedAt: row.revoked_at as string | null,
   }));
+}
+
+export default async function SettingsPage() {
+  const { profile, club, isAdmin, isOwner } = await requireClub();
+  const [members, games, rules, invitations, activity] = await Promise.all([
+    getMembers(club.id),
+    getGameTypes(club.id),
+    getScoringRules(club.id),
+    isAdmin ? getInvitations(club.id) : Promise.resolve([]),
+    isAdmin ? getActivity(club.id, 40) : Promise.resolve([]),
+  ]);
+  const current = rules[0] ?? { ...DEFAULT_SCORING_RULE, version: 1 };
+  const siteUrl = readPublicEnv()?.siteUrl ?? "";
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader eyebrow={club.name} title="Club settings" description={`You are the ${club.role} of this club.`} />
-      <Card id="invite" className="scroll-mt-24">
-        <CardHeader eyebrow="Grow the table" title="Invite friends" />
-        <CardBody>
-          {isAdmin ? (
-            <InvitePanel invitations={invitations} siteUrl={readPublicEnv()?.siteUrl ?? ""} clubName={club.name} />
-          ) : (
+
+      {isAdmin ? (
+        <Card id="invite" className="scroll-mt-24">
+          <CardHeader eyebrow="Grow the table" title="Invite friends" />
+          <CardBody>
+            <InvitePanel invitations={invitations} siteUrl={siteUrl} clubName={club.name} />
+          </CardBody>
+        </Card>
+      ) : (
+        <Card id="invite" className="scroll-mt-24">
+          <CardHeader eyebrow="Grow the table" title="Invite friends" />
+          <CardBody>
             <p className="text-sm text-muted">Ask the club owner or an admin for an invitation link.</p>
-          )}
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      )}
+
       <Card>
         <CardHeader eyebrow={`${members.length} members`} title="Members" />
         <CardBody>
-          <ul className="flex flex-col divide-y divide-line">
-            {members.map((m) => (
-              <li key={m.profile.id} className="flex items-center gap-3 py-3">
-                <Avatar name={m.profile.display_name} src={m.profile.avatar_url} emblem={m.profile.emblem} size="sm" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm text-ivory">{m.profile.display_name}</span>
-                  <span className="block truncate text-xs text-muted">@{m.profile.username}</span>
-                </span>
-                <Badge tone={m.role === "owner" ? "gold" : "neutral"}>{m.role}</Badge>
-              </li>
-            ))}
-          </ul>
+          <MembersPanel
+            members={members.map((m) => ({ profileId: m.profileId, displayName: m.displayName, username: m.username, avatarUrl: m.avatarUrl, emblem: m.emblem, role: m.role }))}
+            myId={profile.id}
+            myRole={club.role}
+          />
         </CardBody>
       </Card>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader eyebrow="Leaderboard points" title="Scoring" />
+          <CardBody>
+            <ScoringPanel
+              current={{ placementPoints: current.placementPoints, participationPoints: current.participationPoints, version: current.version }}
+              history={rules.map((r) => ({ version: r.version, placementPoints: r.placementPoints, participationPoints: r.participationPoints, createdAt: r.createdAt }))}
+              canEdit={isOwner}
+            />
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader eyebrow="Tables" title="Games" />
+          <CardBody>
+            <GamesPanel games={games} canEdit={isAdmin} />
+          </CardBody>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader eyebrow="Identity" title="Club details" />
+        <CardBody>
+          <ClubDetailsPanel
+            initial={{
+              name: club.name,
+              tagline: club.tagline ?? "",
+              playfulTitles: club.playfulTitles,
+              legendPointsThreshold: club.legendPointsThreshold,
+              timezone: club.timezone,
+            }}
+            canEdit={isAdmin}
+          />
+        </CardBody>
+      </Card>
+
+      {isAdmin ? (
+        <Card>
+          <CardHeader eyebrow="Audit trail" title="Recent administrative activity" />
+          <CardBody>
+            <ActivityFeed items={activity} lookup={memberLookup(members)} />
+          </CardBody>
+        </Card>
+      ) : null}
     </div>
   );
 }

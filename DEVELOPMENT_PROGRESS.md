@@ -40,8 +40,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 18 | `feat: implement tournament creation` | done | c400d07 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
 | 19 | `feat: calculate tournament standings` | done | d019e5f | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
 | 20 | `feat: implement player achievements` | done | 444a772 | lint, typecheck, achievement unit tests, build |
-| 21 | `feat: add seasons and club activity` | done | see 22 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
-| 22 | `feat: add club administration and scoring settings` | pending | | |
+| 21 | `feat: add seasons and club activity` | done | 64ea298 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
+| 22 | `feat: add club administration and scoring settings` | done | see 23 | lint, typecheck, PGlite admin/permission tests, scoring panel UI tests, build |
 | 23 | `style: polish responsive layouts and accessibility` | pending | | |
 | 24 | `test: harden scoring and authorization flows` | pending | | |
 | 25 | `docs: finalize release and deployment guide` | pending | | |
@@ -230,6 +230,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Narrow realtime refresh: club pages subscribe to their own club's `matches` and
   `audit_logs` changes (RLS-filtered by Supabase Realtime) and re-render, debounced, so a
   result recorded on one phone appears on everyone else's.
+
+### 22 — Administration and scoring settings
+- Owner only: scoring (each save creates the next gapless version; past matches keep theirs),
+  roles (admin/member), ownership transfer.
+- Owner or admin: club name/tagline/time zone, House Legend milestone, playful titles, adding
+  custom games, choosing which games count toward the overall board (Poker: overall + Poker or
+  Poker only), archiving custom games, removing members (admins cannot remove admins or the
+  owner). Members can leave; removed players' history is kept.
+- Every administrative change writes an audit entry, shown to admins on the settings page.
 
 ## Known issues
 
