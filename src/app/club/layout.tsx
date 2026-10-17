@@ -1,3 +1,4 @@
+import { LiveRefresh } from "@/components/club/live-refresh";
 import { AppShell } from "@/components/shell/app-shell";
 import { ClubSwitcher, SignOutButton } from "@/components/shell/shell-controls";
 import { requireClub } from "@/lib/data/session";
@@ -16,6 +17,7 @@ export default async function ClubLayout({ children }: LayoutProps<"/club">) {
       clubSwitcher={<ClubSwitcher clubs={clubs.map((c) => ({ id: c.id, name: c.name }))} activeId={club.id} />}
       signOut={<SignOutButton />}
     >
+      <LiveRefresh clubId={club.id} />
       {children}
     </AppShell>
   );

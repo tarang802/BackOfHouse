@@ -39,8 +39,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 17 | `feat: add head-to-head rivalries` | done | b3ee588 | lint, typecheck, head-to-head unit tests, build |
 | 18 | `feat: implement tournament creation` | done | c400d07 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
 | 19 | `feat: calculate tournament standings` | done | d019e5f | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
-| 20 | `feat: implement player achievements` | done | see 21 | lint, typecheck, achievement unit tests, build |
-| 21 | `feat: add seasons and club activity` | pending | | |
+| 20 | `feat: implement player achievements` | done | 444a772 | lint, typecheck, achievement unit tests, build |
+| 21 | `feat: add seasons and club activity` | done | see 22 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
 | 22 | `feat: add club administration and scoring settings` | pending | | |
 | 23 | `style: polish responsive layouts and accessibility` | pending | | |
 | 24 | `test: harden scoring and authorization flows` | pending | | |
@@ -220,6 +220,16 @@ following milestone's commit; the final hashes are listed in the release report)
 - Always derived from confirmed matches, so voiding a match revokes anything it earned.
   Profiles show earned and locked achievements with progress. Not stored, so nothing can be
   awarded from fabricated data.
+
+### 21 — Seasons and activity
+- `/club/seasons`: admins start a season (one at a time) and end it. Ending archives a
+  snapshot of the final standings and names the champion — or records a shared first place
+  with no single champion. Match history is never touched. The leaderboard shows the current
+  season next to the all-time board, clearly labelled.
+- Season days follow the club's time zone (a 1:30 am game in India counts for that day).
+- Narrow realtime refresh: club pages subscribe to their own club's `matches` and
+  `audit_logs` changes (RLS-filtered by Supabase Realtime) and re-render, debounced, so a
+  result recorded on one phone appears on everyone else's.
 
 ## Known issues
 
