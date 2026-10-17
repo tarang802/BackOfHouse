@@ -22,8 +22,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | --- | --- | --- | --- | --- |
 | 01 | `chore: initialize application foundation` | done | a9099c4 | lint, typecheck, unit tests, build |
 | 02 | `style: establish premium design system` | done | f9b7010 | lint, typecheck, UI tests, build |
-| 03 | `feat: build premium landing page` | done | see 04 | lint, typecheck, landing tests, build, visual check (375px + desktop) |
-| 04 | `feat: implement authentication` | pending | | |
+| 03 | `feat: build premium landing page` | done | 9096f5b | lint, typecheck, landing tests, build, visual check (375px + desktop) |
+| 04 | `feat: implement authentication` | done | see 05 | lint, typecheck, validation/error-mapping tests, build |
 | 05 | `feat: add database schema and migrations` | pending | | |
 | 06 | `feat: secure database access and permissions` | pending | | |
 | 07 | `feat: implement player profiles` | pending | | |
@@ -72,6 +72,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Hero (“Trust No One. Play Your Hand.”), Enter the Club / Discover the Game CTAs, how-it-works
   steps, features, honest “house rules” (no wagering), closing tagline.
 - Branded 404 and error pages. Checked at 375px (no horizontal scroll) and desktop widths.
+
+### 04 — Authentication
+- Supabase Auth (email + password) with `@supabase/ssr` cookie sessions. `src/proxy.ts` (Next 16’s
+  renamed middleware) refreshes the session and redirects signed-out visitors away from `/club`.
+- Sign up (with email confirmation), sign in, sign out, password recovery (`/forgot-password` →
+  email link → `/auth/confirm` → `/reset-password`). Redirect targets are restricted to in-app
+  paths. Recovery responses never reveal whether an email has an account.
+- Errors from Supabase are mapped to short, safe messages (`src/lib/errors.ts`).
+- Without Supabase configuration the app shows a `/setup` page instead of crashing.
 
 ## Known issues
 
