@@ -31,8 +31,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 09 | `feat: build personalized club dashboard` | done | 721b1b1 | lint, typecheck, stats unit tests, build |
 | 10 | `feat: implement leaderboard engine` | done | ea96fe6 | lint, typecheck, scoring + ranking unit tests, build |
 | 11 | `feat: implement player directory` | done | ff13320 | lint, typecheck, directory UI tests, build |
-| 12 | `feat: add match recording flow` | done | see 13 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
-| 13 | `feat: persist match results transactionally` | pending | | |
+| 12 | `feat: add match recording flow` | done | 8f3eea5 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
+| 13 | `feat: persist match results transactionally` | done | see 14 | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
 | 14 | `feat: implement bluff statistics` | pending | | |
 | 15 | `feat: implement poker session tracking` | pending | | |
 | 16 | `feat: add match history and corrections` | pending | | |
@@ -150,6 +150,17 @@ following milestone's commit; the final hashes are listed in the release report)
 - The browser sends only game, player ids, positions and a submission id generated when the
   form opens (reused on retry). Zod validates on the server before any database call; failures
   show the server's message and never a false success.
+
+### 13 — Transactional persistence
+- `record_match` (one transaction): checks the caller's membership, validates every player is
+  in the club, positions follow competition ranking, the game belongs to the club, the date
+  and notes are sane; picks the club's current scoring version (or the tournament's); writes
+  the match, every participant's points, the optional poker ledger and an activity entry.
+- Idempotent: the same submission id returns the original match — including when two
+  requests race (`on conflict do nothing` + re-read). No points are ever awarded twice.
+- Tests prove the SQL awards exactly the points the TypeScript preview shows, and that later
+  scoring changes never rewrite earlier matches.
+- `/club/matches/[id]` shows the saved result, point breakdown and the rule version used.
 
 ## Known issues
 
