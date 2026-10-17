@@ -25,8 +25,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 03 | `feat: build premium landing page` | done | 9096f5b | lint, typecheck, landing tests, build, visual check (375px + desktop) |
 | 04 | `feat: implement authentication` | done | 33e9be9 | lint, typecheck, validation/error-mapping tests, build |
 | 05 | `feat: add database schema and migrations` | done | f337a00 | lint, typecheck, PGlite schema tests, build |
-| 06 | `feat: secure database access and permissions` | done | see 07 | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
-| 07 | `feat: implement player profiles` | pending | | |
+| 06 | `feat: secure database access and permissions` | done | bf66f7f | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
+| 07 | `feat: implement player profiles` | done | see 08 | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
 | 08 | `feat: add club membership and invitations` | pending | | |
 | 09 | `feat: build personalized club dashboard` | pending | | |
 | 10 | `feat: implement leaderboard engine` | pending | | |
@@ -99,6 +99,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Server-side session helpers (`requireProfile`, `requireClub`) re-validate the active-club
   cookie against real memberships on every request.
 - Tests prove cross-club isolation: guessed IDs return nothing, forged writes are refused.
+
+### 07 — Player profiles
+- Onboarding step 1 creates the player card (display name, unique username with live
+  suggestion, suit emblem). Users can edit it at `/club/profile`.
+- Avatars: resized to a 256px WebP in the browser, uploaded to the user's own folder in the
+  `avatars` bucket (storage policies), and a database constraint only accepts URLs inside that
+  folder. Without a photo, players get a monogram card with their suit.
+- Club shell (desktop sidebar, mobile header + bottom navigation) and the player profile page
+  (identity card; statistics are added with the leaderboard engine).
 
 ## Known issues
 
