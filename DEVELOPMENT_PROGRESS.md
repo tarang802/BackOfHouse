@@ -29,8 +29,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 07 | `feat: implement player profiles` | done | 1d1a73e | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
 | 08 | `feat: add club membership and invitations` | done | e750474 | lint, typecheck, PGlite club/invitation tests, build |
 | 09 | `feat: build personalized club dashboard` | done | 721b1b1 | lint, typecheck, stats unit tests, build |
-| 10 | `feat: implement leaderboard engine` | done | see 11 | lint, typecheck, scoring + ranking unit tests, build |
-| 11 | `feat: implement player directory` | pending | | |
+| 10 | `feat: implement leaderboard engine` | done | ea96fe6 | lint, typecheck, scoring + ranking unit tests, build |
+| 11 | `feat: implement player directory` | done | see 12 | lint, typecheck, directory UI tests, build |
 | 12 | `feat: add match recording flow` | pending | | |
 | 13 | `feat: persist match results transactionally` | pending | | |
 | 14 | `feat: implement bluff statistics` | pending | | |
@@ -135,6 +135,12 @@ following milestone's commit; the final hashes are listed in the release report)
   and date ranges in the club's time zone; search and alternative sorts.
 - `/club/leaderboard`: All-time, per-game and live tournament boards with a “How scoring works”
   panel. The dashboard now previews the real ranked table.
+
+### 11 — Player directory
+- `/club/players`: searchable cards for every member with rank, points, games and win rate.
+- Profile pages now show the full player card: rank, points, games, wins, losses, win rate,
+  current and best streak, recent form, per-game statistics and recent matches. New players
+  see empty states rather than invented numbers.
 
 ## Known issues
 
