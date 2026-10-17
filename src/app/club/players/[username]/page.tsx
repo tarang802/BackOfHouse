@@ -2,6 +2,7 @@ import { Pencil, Swords, Trophy } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AchievementGrid } from "@/components/club/achievement-grid";
 import { GameStatsTable } from "@/components/club/game-stats-table";
 import { MatchList } from "@/components/club/match-list";
 import { PlayerCard } from "@/components/club/player-card";
@@ -11,6 +12,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { getGameTypes, getMatches, getMembers, memberLookup } from "@/lib/data/club-data";
 import { getBracket, getTournaments } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
+import { evaluateAchievements } from "@/lib/domain/achievements";
 import { bestTournamentFinish } from "@/lib/domain/finishes";
 import { buildLeaderboard, leaderboardFilters } from "@/lib/domain/leaderboard";
 import { frequentOpponents, headToHead } from "@/lib/domain/rivalry";
@@ -61,6 +63,15 @@ export default async function PlayerProfilePage({ params }: PageProps<"/club/pla
   const rivals = frequentOpponents(matches, member.profileId)
     .slice(0, 5)
     .map((o) => ({ opponent: lookup(o.profileId), h2h: headToHead(matches, member.profileId, o.profileId) }));
+
+  const achievements = evaluateAchievements(member.profileId, {
+    matches,
+    gameTypes: games,
+    tournamentChampions: completed.map((t) => t.championId).filter((id): id is string => !!id),
+    memberIds: members.map((m) => m.profileId),
+    legendPointsThreshold: club.legendPointsThreshold,
+    playfulTitles: club.playfulTitles,
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -122,6 +133,13 @@ export default async function PlayerProfilePage({ params }: PageProps<"/club/pla
           </CardBody>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader eyebrow="Trophy cabinet" title="Achievements" />
+        <CardBody>
+          <AchievementGrid achievements={achievements} />
+        </CardBody>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

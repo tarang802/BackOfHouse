@@ -38,8 +38,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 16 | `feat: add match history and corrections` | done | 20f9324 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
 | 17 | `feat: add head-to-head rivalries` | done | b3ee588 | lint, typecheck, head-to-head unit tests, build |
 | 18 | `feat: implement tournament creation` | done | c400d07 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
-| 19 | `feat: calculate tournament standings` | done | see 20 | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
-| 20 | `feat: implement player achievements` | pending | | |
+| 19 | `feat: calculate tournament standings` | done | d019e5f | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
+| 20 | `feat: implement player achievements` | done | see 21 | lint, typecheck, achievement unit tests, build |
 | 21 | `feat: add seasons and club activity` | pending | | |
 | 22 | `feat: add club administration and scoring settings` | pending | | |
 | 23 | `style: polish responsive layouts and accessibility` | pending | | |
@@ -211,6 +211,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Championship screen: restrained gold reveal with drifting suits, static with reduced motion.
 - Profiles gain “Silverware”: best finish (knockout places derive from the round lost) and
   titles won.
+
+### 20 — Achievements
+- First Blood, Poker Face (5 Poker wins), Bluff Master (10 Bluff wins), On a Roll (5 straight
+  wins), Comeback King (a win straight after 3+ losses), House Legend (club-configurable points
+  milestone), Tournament Champion, Rivalry Winner (leading a rival after 5+ meetings).
+- Optional playful titles (Eternal Runner-Up, Cursed Hand) appear only if the club enables them.
+- Always derived from confirmed matches, so voiding a match revokes anything it earned.
+  Profiles show earned and locked achievements with progress. Not stored, so nothing can be
+  awarded from fabricated data.
 
 ## Known issues
 
