@@ -36,8 +36,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 14 | `feat: implement bluff statistics` | done | 21bc97d | lint, typecheck, head-to-head unit tests, build |
 | 15 | `feat: implement poker session tracking` | done | 8f5cd78 | lint, typecheck, ledger unit tests, build |
 | 16 | `feat: add match history and corrections` | done | 20f9324 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
-| 17 | `feat: add head-to-head rivalries` | done | see 18 | lint, typecheck, head-to-head unit tests, build |
-| 18 | `feat: implement tournament creation` | pending | | |
+| 17 | `feat: add head-to-head rivalries` | done | b3ee588 | lint, typecheck, head-to-head unit tests, build |
+| 18 | `feat: implement tournament creation` | done | see 19 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
 | 19 | `feat: calculate tournament standings` | pending | | |
 | 20 | `feat: implement player achievements` | pending | | |
 | 21 | `feat: add seasons and club activity` | pending | | |
@@ -193,6 +193,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Profiles list each player's regular rivals with the running score and a “Compare with me”
   shortcut. Voided matches never count.
 - Stabilised a timing-sensitive recorder test (the retry now waits for the first attempt to settle).
+
+### 18 — Tournaments
+- Owners/admins create tournaments (name, description, game, dates, players, format, draft or
+  upcoming). Formats: points race, fixed rounds, single-elimination knockout.
+- Lifecycle draft → upcoming → in progress → completed, or cancelled; illegal transitions are
+  refused in SQL. Players can only change before the start; matches only count while live.
+- Knockouts: 2/4/8/16/32 players, seeded (1v8, 4v5, 2v7, 3v6 …) when started. Each pairing
+  is recorded from the bracket; results must be between the two paired players with a clear
+  winner; the next round is drawn automatically and the final's winner is crowned.
 
 ## Known issues
 
