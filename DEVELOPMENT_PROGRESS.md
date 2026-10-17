@@ -30,8 +30,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 08 | `feat: add club membership and invitations` | done | e750474 | lint, typecheck, PGlite club/invitation tests, build |
 | 09 | `feat: build personalized club dashboard` | done | 721b1b1 | lint, typecheck, stats unit tests, build |
 | 10 | `feat: implement leaderboard engine` | done | ea96fe6 | lint, typecheck, scoring + ranking unit tests, build |
-| 11 | `feat: implement player directory` | done | see 12 | lint, typecheck, directory UI tests, build |
-| 12 | `feat: add match recording flow` | pending | | |
+| 11 | `feat: implement player directory` | done | ff13320 | lint, typecheck, directory UI tests, build |
+| 12 | `feat: add match recording flow` | done | see 13 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
 | 13 | `feat: persist match results transactionally` | pending | | |
 | 14 | `feat: implement bluff statistics` | pending | | |
 | 15 | `feat: implement poker session tracking` | pending | | |
@@ -141,6 +141,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Profile pages now show the full player card: rank, points, games, wins, losses, win rate,
   current and best streak, recent form, per-game statistics and recent matches. New players
   see empty states rather than invented numbers.
+
+### 12 — Match recording flow
+- `/club/matches/new`: pick the game → tap players in finishing order → adjust order/ties →
+  live point preview → save. “Same table as last time” restores the previous line-up (a
+  browser convenience only). Optional date, notes, and for Poker a private buy-in/cash-out
+  record. The save button stays docked above the bottom navigation on phones.
+- The browser sends only game, player ids, positions and a submission id generated when the
+  form opens (reused on retry). Zod validates on the server before any database call; failures
+  show the server's message and never a false success.
 
 ## Known issues
 
