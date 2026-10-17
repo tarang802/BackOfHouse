@@ -33,8 +33,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 11 | `feat: implement player directory` | done | ff13320 | lint, typecheck, directory UI tests, build |
 | 12 | `feat: add match recording flow` | done | 8f3eea5 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
 | 13 | `feat: persist match results transactionally` | done | daf81cd | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
-| 14 | `feat: implement bluff statistics` | done | see 15 | lint, typecheck, head-to-head unit tests, build |
-| 15 | `feat: implement poker session tracking` | pending | | |
+| 14 | `feat: implement bluff statistics` | done | 21bc97d | lint, typecheck, head-to-head unit tests, build |
+| 15 | `feat: implement poker session tracking` | done | see 16 | lint, typecheck, ledger unit tests, build |
 | 16 | `feat: add match history and corrections` | pending | | |
 | 17 | `feat: add head-to-head rivalries` | pending | | |
 | 18 | `feat: implement tournament creation` | pending | | |
@@ -169,6 +169,14 @@ following milestone's commit; the final hashes are listed in the release report)
 - Head-to-head engine (`rivalry.ts`): who finished ahead in shared matches, draws for equal
   finishes, outright wins, per-game split, tournament meetings, recent encounters.
 - Built on a reusable `GameHub`, so any game type gets the same section.
+
+### 15 — Poker
+- `/club/games/poker`: sessions, wins, win rate, net leaderboard points, form, the Poker board,
+  rivalries and history — quick to record (finishing order only, no hand-by-hand logging).
+- Whether Poker counts toward the overall board is a per-game club setting (overall + Poker,
+  or Poker only) and the page says which applies.
+- Optional private session accounting (buy-in / cash-out per player) summarised per player.
+  It is clearly labelled, never affects points, and nothing in the app moves money.
 
 ## Known issues
 
