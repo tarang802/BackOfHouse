@@ -42,8 +42,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 20 | `feat: implement player achievements` | done | 444a772 | lint, typecheck, achievement unit tests, build |
 | 21 | `feat: add seasons and club activity` | done | 64ea298 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
 | 22 | `feat: add club administration and scoring settings` | done | 8d13fbf | lint, typecheck, PGlite admin/permission tests, scoring panel UI tests, build |
-| 23 | `style: polish responsive layouts and accessibility` | done | see 24 | lint, typecheck, axe audits (jsdom), build, visual check of public pages at 375px |
-| 24 | `test: harden scoring and authorization flows` | pending | | |
+| 23 | `style: polish responsive layouts and accessibility` | done | 44b7f72 | lint, typecheck, axe audits (jsdom), build, visual check of public pages at 375px |
+| 24 | `test: harden scoring and authorization flows` | done | see 25 | lint (0 warnings), typecheck, full suite, build |
 | 25 | `docs: finalize release and deployment guide` | pending | | |
 
 ## Milestone notes
@@ -249,6 +249,19 @@ following milestone's commit; the final hashes are listed in the release report)
 - In-club 404 keeps the navigation. Automated axe checks cover the landing page, recorder,
   leaderboard table and player directory (contrast is checked manually: ivory #F2EFE6 on
   #090A0A ≈ 17:1, muted #969990 ≈ 6.9:1).
+
+### 24 — Test hardening
+- `tests/db/flow.test.ts`: the definition-of-done journey against the real migrations — open a
+  club, invite friends, record Bluff/Poker results, rebuild the leaderboard from what a member
+  can read through RLS, reject bad submissions with no side effects, apply a correction that
+  updates rivalries, complete a rounds tournament, treat a replayed submission as one match,
+  and refuse to attach a match to another club's tournament.
+- `src/lib/data/session.test.ts`: the active-club cookie is only honoured for real memberships;
+  signed-out users go to login, users without a profile or club go to onboarding.
+- Cleaned remaining lint warnings; added a GitHub Actions workflow (lint, typecheck, tests, build).
+- Browser end-to-end tests (Playwright) were not added: they need a live Supabase project,
+  which is not available from this environment. The flow test above covers the same journey
+  at the database layer.
 
 ## Known issues
 

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { as, createClubWith, createTestDb, createUser, expectAppError, gameId, recordMatch, results, rpc, type Db } from "./harness";
+import { createClubWith, createTestDb, createUser, expectAppError, gameId, recordMatch, results, rpc, type Db } from "./harness";
 
 let db: Db;
 let owner: string;
@@ -8,7 +8,6 @@ let players: string[];
 let member: string;
 let clubId: string;
 let bluff: string;
-let poker: string;
 
 const today = "2026-10-17";
 
@@ -36,7 +35,6 @@ beforeAll(async () => {
   member = players[0];
   clubId = await createClubWith(db, owner, players, "Cup Club");
   bluff = await gameId(db, clubId, "bluff");
-  poker = await gameId(db, clubId, "poker");
 });
 
 afterAll(async () => {

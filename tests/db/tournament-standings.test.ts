@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { tournamentStandings } from "@/lib/domain/standings";
-import { as, createClubWith, createTestDb, createUser, expectAppError, gameId, recordMatch, results, rpc, type Db } from "./harness";
+import { as, createClubWith, createTestDb, createUser, expectAppError, gameId, recordMatch, rpc, type Db } from "./harness";
 
 let db: Db;
 let owner: string;
@@ -20,14 +20,6 @@ async function createTournament(format: "points" | "rounds" | "elimination", ids
 async function status(id: string) {
   const r = await db.query<{ status: string; champion_id: string | null }>(`select status, champion_id from public.tournaments where id = $1`, [id]);
   return r.rows[0];
-}
-
-async function bracket(id: string) {
-  const r = await db.query<{ id: string; round: number; slot: number; player_a: string; player_b: string; winner_id: string | null }>(
-    `select id, round, slot, player_a, player_b, winner_id from public.tournament_bracket_matches where tournament_id = $1 order by round, slot`,
-    [id],
-  );
-  return r.rows;
 }
 
 beforeAll(async () => {
