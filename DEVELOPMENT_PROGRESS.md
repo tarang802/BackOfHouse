@@ -27,8 +27,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 05 | `feat: add database schema and migrations` | done | f337a00 | lint, typecheck, PGlite schema tests, build |
 | 06 | `feat: secure database access and permissions` | done | bf66f7f | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
 | 07 | `feat: implement player profiles` | done | 1d1a73e | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
-| 08 | `feat: add club membership and invitations` | done | see 09 | lint, typecheck, PGlite club/invitation tests, build |
-| 09 | `feat: build personalized club dashboard` | pending | | |
+| 08 | `feat: add club membership and invitations` | done | e750474 | lint, typecheck, PGlite club/invitation tests, build |
+| 09 | `feat: build personalized club dashboard` | done | see 10 | lint, typecheck, stats unit tests, build |
 | 10 | `feat: implement leaderboard engine` | pending | | |
 | 11 | `feat: implement player directory` | pending | | |
 | 12 | `feat: add match recording flow` | pending | | |
@@ -116,6 +116,15 @@ following milestone's commit; the final hashes are listed in the release report)
   limits, revocable; shareable `/join/<code>` links carry new users through sign-up and
   profile creation straight to the join form. Joining is idempotent.
 - Members can belong to several clubs; a validated cookie remembers the active one.
+
+### 09 — Dashboard
+- `/club`: club identity and member count, current season label, your standing (points,
+  win rate, last-five form with W/L letters), top players, live tournaments and recent
+  champions, recent matches, club activity, and quick actions (record, invite).
+- Statistics are pure functions over confirmed matches (`src/lib/domain/stats.ts`): wins,
+  losses, points, win rate, average finish, current/best streaks, recent form.
+- Server-side data access (`src/lib/data/*`) always queries with the user's session (RLS),
+  paging past PostgREST's 1,000-row cap.
 
 ## Known issues
 
