@@ -21,8 +21,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | # | Commit message | Status | Hash | Checks |
 | --- | --- | --- | --- | --- |
 | 01 | `chore: initialize application foundation` | done | a9099c4 | lint, typecheck, unit tests, build |
-| 02 | `style: establish premium design system` | done | see 03 | lint, typecheck, UI tests, build |
-| 03 | `feat: build premium landing page` | pending | | |
+| 02 | `style: establish premium design system` | done | f9b7010 | lint, typecheck, UI tests, build |
+| 03 | `feat: build premium landing page` | done | see 04 | lint, typecheck, landing tests, build, visual check (375px + desktop) |
 | 04 | `feat: implement authentication` | pending | | |
 | 05 | `feat: add database schema and migrations` | pending | | |
 | 06 | `feat: secure database access and permissions` | pending | | |
@@ -67,6 +67,11 @@ following milestone's commit; the final hashes are listed in the release report)
   Badge/FormPill, Avatar (photo or suit monogram), Dialog (native `<dialog>`, sheet on phones),
   EmptyState/Skeleton/GoldDivider/PageHeader, CountUp. Brand: Logo, PlayingCard.
 - Motion respects `prefers-reduced-motion` globally and via `useReducedMotion`.
+
+### 03 — Landing page
+- Hero (“Trust No One. Play Your Hand.”), Enter the Club / Discover the Game CTAs, how-it-works
+  steps, features, honest “house rules” (no wagering), closing tagline.
+- Branded 404 and error pages. Checked at 375px (no horizontal scroll) and desktop widths.
 
 ## Known issues
 
