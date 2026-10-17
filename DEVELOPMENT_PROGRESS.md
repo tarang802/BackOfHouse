@@ -32,8 +32,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 10 | `feat: implement leaderboard engine` | done | ea96fe6 | lint, typecheck, scoring + ranking unit tests, build |
 | 11 | `feat: implement player directory` | done | ff13320 | lint, typecheck, directory UI tests, build |
 | 12 | `feat: add match recording flow` | done | 8f3eea5 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
-| 13 | `feat: persist match results transactionally` | done | see 14 | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
-| 14 | `feat: implement bluff statistics` | pending | | |
+| 13 | `feat: persist match results transactionally` | done | daf81cd | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
+| 14 | `feat: implement bluff statistics` | done | see 15 | lint, typecheck, head-to-head unit tests, build |
 | 15 | `feat: implement poker session tracking` | pending | | |
 | 16 | `feat: add match history and corrections` | pending | | |
 | 17 | `feat: add head-to-head rivalries` | pending | | |
@@ -161,6 +161,14 @@ following milestone's commit; the final hashes are listed in the release report)
 - Tests prove the SQL awards exactly the points the TypeScript preview shows, and that later
   scoring changes never rewrite earlier matches.
 - `/club/matches/[id]` shows the saved result, point breakdown and the rule version used.
+
+### 14 — Bluff
+- `/club/games/bluff`: your wins, win rate, average finish and best streak (with the club
+  record), the Bluff leaderboard, the most-played Bluff rivalries and recent Bluff games.
+- House rules stay flexible: the app records finishing order only, never a fixed ruleset.
+- Head-to-head engine (`rivalry.ts`): who finished ahead in shared matches, draws for equal
+  finishes, outright wins, per-game split, tournament meetings, recent encounters.
+- Built on a reusable `GameHub`, so any game type gets the same section.
 
 ## Known issues
 
