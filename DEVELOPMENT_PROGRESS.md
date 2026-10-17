@@ -28,8 +28,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 06 | `feat: secure database access and permissions` | done | bf66f7f | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
 | 07 | `feat: implement player profiles` | done | 1d1a73e | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
 | 08 | `feat: add club membership and invitations` | done | e750474 | lint, typecheck, PGlite club/invitation tests, build |
-| 09 | `feat: build personalized club dashboard` | done | see 10 | lint, typecheck, stats unit tests, build |
-| 10 | `feat: implement leaderboard engine` | pending | | |
+| 09 | `feat: build personalized club dashboard` | done | 721b1b1 | lint, typecheck, stats unit tests, build |
+| 10 | `feat: implement leaderboard engine` | done | see 11 | lint, typecheck, scoring + ranking unit tests, build |
 | 11 | `feat: implement player directory` | pending | | |
 | 12 | `feat: add match recording flow` | pending | | |
 | 13 | `feat: persist match results transactionally` | pending | | |
@@ -125,6 +125,16 @@ following milestone's commit; the final hashes are listed in the release report)
   losses, points, win rate, average finish, current/best streaks, recent form.
 - Server-side data access (`src/lib/data/*`) always queries with the user's session (RLS),
   paging past PostgREST's 1,000-row cap.
+
+### 10 — Leaderboard engine
+- Scoring (`src/lib/domain/scoring.ts`): placement validation with competition-ranked ties
+  (1, 2, 2, 4), configurable placement points + optional participation points, rule validation,
+  plain-language rule descriptions. Mirrors the SQL that will award points on the server.
+- Ranking (`leaderboard.ts`): points → wins → win rate; full ties share a rank; players with no
+  games are listed as unranked. Filters for overall (games that count), per game, tournament
+  and date ranges in the club's time zone; search and alternative sorts.
+- `/club/leaderboard`: All-time, per-game and live tournament boards with a “How scoring works”
+  panel. The dashboard now previews the real ranked table.
 
 ## Known issues
 

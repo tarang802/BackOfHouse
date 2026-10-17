@@ -2,7 +2,9 @@ import { ArrowRight, Crown, Plus, Trophy, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActivityFeed } from "@/components/club/activity-feed";
+import { LeaderboardTable } from "@/components/club/leaderboard-table";
 import { MatchList } from "@/components/club/match-list";
+import { toLeaderboardRows } from "@/components/club/rows";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, FormPill } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -13,7 +15,8 @@ import { FormMessage } from "@/components/ui/field";
 import { getGameTypes, getMatches, getMembers, memberLookup } from "@/lib/data/club-data";
 import { getActivity, getSeasons, getTournaments } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
-import { computePlayerStats, formatWinRate } from "@/lib/domain/stats";
+import { buildLeaderboard, leaderboardFilters } from "@/lib/domain/leaderboard";
+import { formatWinRate } from "@/lib/domain/stats";
 import { confirmedOnly } from "@/lib/domain/types";
 import { pluralize } from "@/lib/utils";
 
@@ -32,12 +35,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/club">
   ]);
   const lookup = memberLookup(members);
   const gameName = (id: string) => games.find((g) => g.id === id)?.name ?? "Game";
-  // Overall points from games that count toward the overall table, most first.
-  const overall = new Set(games.filter((g) => g.countsTowardOverall).map((g) => g.id));
-  const board = members
-    .map((member) => ({ member, stats: computePlayerStats(matches, member.profileId, (m) => overall.has(m.gameTypeId)) }))
-    .sort((a, b) => b.stats.points - a.stats.points || b.stats.wins - a.stats.wins || a.member.displayName.localeCompare(b.member.displayName))
-    .map((entry, index) => ({ ...entry, rank: entry.stats.games > 0 ? index + 1 : null }));
+  const board = buildLeaderboard(matches, members, leaderboardFilters.overall(games));
   const me = board.find((entry) => entry.member.profileId === profile.id);
   const confirmed = confirmedOnly(matches);
   const activeSeason = seasons.find((s) => s.status === "active");
@@ -99,25 +97,22 @@ export default async function DashboardPage({ searchParams }: PageProps<"/club">
 
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
         <Card>
-          <CardHeader eyebrow="Overall" title="Most points" />
+          <CardHeader
+            eyebrow="Overall"
+            title="Leaderboard"
+            action={
+              <Link href="/club/leaderboard" className="flex items-center gap-1 text-sm text-muted hover:text-ivory">
+                Full table <ArrowRight className="size-4" />
+              </Link>
+            }
+          />
           <CardBody>
             {confirmed.length === 0 ? (
               <EmptyState title="No games yet" action={<ButtonLink href="/club/matches/new" size="sm">Record the first one</ButtonLink>}>
-                Standings appear after your first recorded match.
+                Rankings appear after your first recorded match.
               </EmptyState>
             ) : (
-              <ol className="flex flex-col divide-y divide-line">
-                {board.filter((e) => e.rank !== null).slice(0, 5).map((entry) => (
-                  <li key={entry.member.profileId} className="flex items-center gap-3 py-3">
-                    <span className="w-6 font-display text-xl tabular text-muted">{entry.rank}</span>
-                    <Avatar name={entry.member.displayName} src={entry.member.avatarUrl} emblem={entry.member.emblem} size="sm" />
-                    <Link href={`/club/players/${entry.member.username}`} className="min-w-0 flex-1 truncate text-ivory hover:underline hover:underline-offset-4">
-                      {entry.member.displayName}
-                    </Link>
-                    <span className="tabular text-ivory">{entry.stats.points} pts</span>
-                  </li>
-                ))}
-              </ol>
+              <LeaderboardTable caption="Overall leaderboard, top five" compact rows={toLeaderboardRows(board.slice(0, 5), profile.id)} />
             )}
           </CardBody>
         </Card>

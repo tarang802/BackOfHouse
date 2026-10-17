@@ -1,3 +1,4 @@
+import { DEFAULT_SCORING_RULE, pointsForPlacement, type ScoringRule } from "./scoring";
 import type { GameTypeInfo, MatchRecord, MemberInfo } from "./types";
 
 /** Helpers for building realistic match histories in tests. */
@@ -37,17 +38,18 @@ export function match(
     day?: number;
     status?: "confirmed" | "voided";
     tournamentId?: string | null;
+    rule?: ScoringRule;
     playedAt?: string;
   } = {},
 ): MatchRecord {
   counter += 1;
-  const pointsFor = (position: number) => [3, 1][position - 1] ?? 0;
+  const rule = options.rule ?? DEFAULT_SCORING_RULE;
   const participants: MatchRecord["participants"] = [];
   let position = 1;
   for (const slot of order) {
     const group = Array.isArray(slot) ? slot : [slot];
     for (const profileId of group) {
-      participants.push({ profileId, placement: position, pointsAwarded: pointsFor(position) });
+      participants.push({ profileId, placement: position, pointsAwarded: pointsForPlacement(rule, position) });
     }
     position += group.length;
   }

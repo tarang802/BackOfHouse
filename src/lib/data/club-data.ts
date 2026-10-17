@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import type { ScoringRule } from "@/lib/domain/scoring";
 import type { GameKind, GameTypeInfo, MatchRecord, MemberInfo } from "@/lib/domain/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -20,6 +21,8 @@ export type MatchDetail = MatchRecord & {
   tournamentRound: number | null;
   bracketMatchId: string | null;
 };
+
+export type ScoringRuleVersion = ScoringRule & { id: string; version: number; createdAt: string };
 
 type MatchRow = {
   id: string;
@@ -139,6 +142,27 @@ export const getMatch = cache(async (clubId: string, matchId: string): Promise<M
     .maybeSingle();
   return data ? mapMatch(data as unknown as MatchRow) : null;
 });
+
+export const getScoringRules = cache(async (clubId: string): Promise<ScoringRuleVersion[]> => {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("scoring_rules")
+    .select("id, version, placement_points, participation_points, created_at")
+    .eq("club_id", clubId)
+    .order("version", { ascending: false });
+  if (error) throw new Error("Could not load scoring rules.");
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    version: row.version as number,
+    placementPoints: row.placement_points as number[],
+    participationPoints: row.participation_points as number,
+    createdAt: row.created_at as string,
+  }));
+});
+
+export async function getCurrentScoringRule(clubId: string): Promise<ScoringRuleVersion | null> {
+  return (await getScoringRules(clubId))[0] ?? null;
+}
 
 /** Profile lookup that also covers former members who appear in old matches. */
 export function memberLookup(members: MemberInfo[]) {
