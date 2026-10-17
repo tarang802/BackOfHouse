@@ -35,8 +35,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 13 | `feat: persist match results transactionally` | done | daf81cd | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
 | 14 | `feat: implement bluff statistics` | done | 21bc97d | lint, typecheck, head-to-head unit tests, build |
 | 15 | `feat: implement poker session tracking` | done | 8f5cd78 | lint, typecheck, ledger unit tests, build |
-| 16 | `feat: add match history and corrections` | done | see 17 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
-| 17 | `feat: add head-to-head rivalries` | pending | | |
+| 16 | `feat: add match history and corrections` | done | 20f9324 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
+| 17 | `feat: add head-to-head rivalries` | done | see 18 | lint, typecheck, head-to-head unit tests, build |
 | 18 | `feat: implement tournament creation` | pending | | |
 | 19 | `feat: calculate tournament standings` | pending | | |
 | 20 | `feat: implement player achievements` | pending | | |
@@ -185,6 +185,14 @@ following milestone's commit; the final hashes are listed in the release report)
   original scoring version, poker ledger carried over) — atomically, with an audit entry.
   Corrections are idempotent per submission and a failed correction leaves the original intact.
 - Completed tournaments are frozen; knockout corrections roll back unplayed later rounds.
+
+### 17 — Rivalries
+- `/club/rivalries?a=…&b=…`: pick any two members (defaults to you and your most frequent
+  opponent): who finished ahead more often, win share, outright wins, level finishes,
+  tournament meetings, per-game breakdown and the latest encounters with links.
+- Profiles list each player's regular rivals with the running score and a “Compare with me”
+  shortcut. Voided matches never count.
+- Stabilised a timing-sensitive recorder test (the retry now waits for the first attempt to settle).
 
 ## Known issues
 

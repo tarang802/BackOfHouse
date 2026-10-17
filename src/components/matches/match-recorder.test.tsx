@@ -108,7 +108,8 @@ describe("MatchRecorder", () => {
     await tap(user, "Chen");
     await user.click(screen.getByRole("button", { name: /save result/i }));
     await screen.findByRole("alert");
-    await user.click(screen.getByRole("button", { name: /save result/i }));
+    // Wait for the first attempt's transition to settle before retrying.
+    await user.click(await screen.findByRole("button", { name: /save result · 2 players/i }));
     await waitFor(() => expect(action).toHaveBeenCalledTimes(2));
     expect(action.mock.calls[0][0].submissionId).toBe(action.mock.calls[1][0].submissionId);
   });
