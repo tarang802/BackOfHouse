@@ -1,4 +1,4 @@
-import { Pencil, Swords } from "lucide-react";
+import { Pencil, Swords, Trophy } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,9 +9,12 @@ import { Avatar } from "@/components/ui/avatar";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { getGameTypes, getMatches, getMembers, memberLookup } from "@/lib/data/club-data";
+import { getBracket, getTournaments } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
+import { bestTournamentFinish } from "@/lib/domain/finishes";
 import { buildLeaderboard, leaderboardFilters } from "@/lib/domain/leaderboard";
 import { frequentOpponents, headToHead } from "@/lib/domain/rivalry";
+import { ordinal } from "@/lib/domain/scoring";
 import { computePlayerStats, matchesForPlayer } from "@/lib/domain/stats";
 import { confirmedOnly } from "@/lib/domain/types";
 
@@ -23,7 +26,12 @@ export async function generateMetadata({ params }: PageProps<"/club/players/[use
 export default async function PlayerProfilePage({ params }: PageProps<"/club/players/[username]">) {
   const { username } = await params;
   const { profile, club } = await requireClub();
-  const [members, games, matches] = await Promise.all([getMembers(club.id), getGameTypes(club.id), getMatches(club.id)]);
+  const [members, games, matches, tournaments] = await Promise.all([
+    getMembers(club.id),
+    getGameTypes(club.id),
+    getMatches(club.id),
+    getTournaments(club.id),
+  ]);
   // Only members of this club can be viewed here; anyone else is "not found".
   const member = members.find((m) => m.username === username.toLowerCase());
   if (!member) notFound();
@@ -39,6 +47,16 @@ export default async function PlayerProfilePage({ params }: PageProps<"/club/pla
   }));
   const recent = confirmedOnly(matchesForPlayer(matches, member.profileId)).slice(0, 8);
   const isMe = member.profileId === profile.id;
+
+  const completed = tournaments.filter((t) => t.status === "completed");
+  const completedWithBrackets = await Promise.all(
+    completed.map(async (t) => ({
+      ...t,
+      bracket: t.format === "elimination" && t.participantIds.includes(member.profileId) ? await getBracket(t.id) : undefined,
+    })),
+  );
+  const bestFinish = bestTournamentFinish(completedWithBrackets, member.profileId, matches);
+  const titles = completed.filter((t) => t.championId === member.profileId);
 
   const rivals = frequentOpponents(matches, member.profileId)
     .slice(0, 5)
@@ -72,12 +90,38 @@ export default async function PlayerProfilePage({ params }: PageProps<"/club/pla
         Points and rank are from the overall leaderboard. Games, wins and streaks include every game type.
       </p>
 
-      <Card>
-        <CardHeader eyebrow="By game" title="Game statistics" />
-        <CardBody>
-          <GameStatsTable rows={perGame} />
-        </CardBody>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <Card>
+          <CardHeader eyebrow="By game" title="Game statistics" />
+          <CardBody>
+            <GameStatsTable rows={perGame} />
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader eyebrow="Tournaments" title="Silverware" />
+          <CardBody className="flex flex-col gap-3 text-sm">
+            {bestFinish ? (
+              <p className="text-ivory-dim">
+                Best finish:{" "}
+                <Link href={`/club/tournaments/${bestFinish.tournamentId}`} className="text-ivory hover:underline hover:underline-offset-4">
+                  {bestFinish.place === 1 ? "Champion" : ordinal(bestFinish.place)} · {bestFinish.tournamentName}
+                </Link>
+              </p>
+            ) : (
+              <p className="text-muted">No completed tournaments yet.</p>
+            )}
+            {titles.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {titles.map((t) => (
+                  <li key={t.id} className="flex items-center gap-2 text-ivory">
+                    <Trophy className="size-4 text-gold" aria-hidden /> {t.name}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </CardBody>
+        </Card>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

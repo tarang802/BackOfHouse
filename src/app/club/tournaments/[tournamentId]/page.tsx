@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MatchList } from "@/components/club/match-list";
 import { BracketView } from "@/components/tournaments/bracket-view";
+import { Championship } from "@/components/tournaments/championship";
 import { TournamentControls } from "@/components/tournaments/tournament-controls";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,7 @@ import { getGameTypes, getMatches, getMembers, getScoringRules, memberLookup } f
 import { getBracket, getTournament } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
 import { describeScoringRule } from "@/lib/domain/scoring";
+import { checkPointsCompletion, tournamentStandings } from "@/lib/domain/standings";
 import { totalRounds } from "@/lib/domain/tournament";
 import { confirmedOnly } from "@/lib/domain/types";
 import { formatDate, pluralize } from "@/lib/utils";
@@ -38,9 +40,25 @@ export default async function TournamentPage({ params }: PageProps<"/club/tourna
   const game = games.find((g) => g.id === tournament.gameTypeId);
   const rule = rules.find((r) => r.id === tournament.scoringRuleId);
   const tMatches = confirmedOnly(matches).filter((m) => m.tournamentId === tournament.id);
+  const standings = tournamentStandings(tournament.participantIds, matches, tournament.id);
   const rounds = tournament.format === "elimination" ? totalRounds(tournament.participantIds.length) : 0;
   const champion = tournament.championId ? lookup(tournament.championId) : null;
 
+  const completionCheck =
+    tournament.format === "elimination"
+      ? null
+      : checkPointsCompletion({
+          format: tournament.format,
+          status: tournament.status,
+          roundCount: tournament.roundCount,
+          standings,
+          confirmedMatches: tMatches.length,
+        });
+  const completion = completionCheck
+    ? completionCheck.ok
+      ? { ok: true as const, championName: lookup(completionCheck.championId).displayName }
+      : { ok: false as const, reason: completionCheck.reason }
+    : null;
   const roundsPlayed = tournament.format === "rounds" ? `${tMatches.length} / ${tournament.roundCount} rounds` : null;
 
   return (
@@ -72,20 +90,26 @@ export default async function TournamentPage({ params }: PageProps<"/club/tourna
             </ButtonLink>
           ) : null}
           {isAdmin ? (
-            <TournamentControls tournamentId={tournament.id} status={tournament.status} />
+            <TournamentControls tournamentId={tournament.id} status={tournament.status} format={tournament.format} completion={completion} />
           ) : null}
         </div>
       </header>
 
       {champion && tournament.status === "completed" ? (
-        <p className="text-sm text-ivory-dim">
-          Champion: <span className="text-gold">{champion.displayName}</span>
-        </p>
+        <Championship
+          tournamentName={tournament.name}
+          champion={champion}
+          detail={
+            tournament.format === "elimination"
+              ? `Won the ${pluralize(tournament.participantIds.length, "player")} knockout${tournament.completedAt ? ` · ${formatDate(tournament.completedAt)}` : ""}`
+              : `${standings[0]?.points ?? 0} points from ${pluralize(tMatches.length, "match", "matches")}${tournament.completedAt ? ` · ${formatDate(tournament.completedAt)}` : ""}`
+          }
+        />
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Card>
-          <CardHeader eyebrow={tournament.format === "elimination" ? "Bracket" : "Players"} title={tournament.format === "elimination" ? "The draw" : "Registered"} />
+          <CardHeader eyebrow={tournament.format === "elimination" ? "Bracket" : "Standings"} title={tournament.format === "elimination" ? "The draw" : "Table"} />
           <CardBody>
             {tournament.format === "elimination" ? (
               bracket.length === 0 ? (
@@ -94,17 +118,39 @@ export default async function TournamentPage({ params }: PageProps<"/club/tourna
                 <BracketView bracket={bracket} totalRounds={rounds} lookup={lookup} tournamentId={tournament.id} canRecord={tournament.status === "in_progress"} />
               )
             ) : (
-              <ul className="flex flex-col divide-y divide-line">
-                {tournament.participantIds.map((id) => {
-                  const player = lookup(id);
-                  return (
-                    <li key={id} className="flex items-center gap-3 py-3">
-                      <Avatar name={player.displayName} src={player.avatarUrl} emblem={player.emblem} size="sm" />
-                      <span className="truncate text-ivory">{player.displayName}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <table className="w-full text-sm">
+                <caption className="sr-only">Tournament standings</caption>
+                <thead>
+                  <tr className="text-left text-[11px] uppercase tracking-[0.14em] text-faint">
+                    <th scope="col" className="w-10 pb-3 font-medium">#</th>
+                    <th scope="col" className="pb-3 font-medium">Player</th>
+                    <th scope="col" className="pb-3 text-right font-medium">Played</th>
+                    <th scope="col" className="pb-3 text-right font-medium">Wins</th>
+                    <th scope="col" className="pb-3 text-right font-medium">Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {standings.map((row) => {
+                    const player = lookup(row.profileId);
+                    const isChampion = row.profileId === tournament.championId;
+                    return (
+                      <tr key={row.profileId} className="border-t border-line">
+                        <td className={`py-3 font-display text-xl tabular ${row.rank === 1 && row.played > 0 ? "text-gold" : "text-muted"}`}>{row.rank}</td>
+                        <td className="py-3">
+                          <span className="flex items-center gap-3">
+                            <Avatar name={player.displayName} src={player.avatarUrl} emblem={player.emblem} size="sm" ring={isChampion ? "gold" : undefined} />
+                            <span className="truncate text-ivory">{player.displayName}</span>
+                            {isChampion ? <Badge tone="gold">Champion</Badge> : null}
+                          </span>
+                        </td>
+                        <td className="py-3 text-right tabular text-ivory-dim">{row.played}</td>
+                        <td className="py-3 text-right tabular text-ivory-dim">{row.wins}</td>
+                        <td className="py-3 text-right tabular font-semibold text-ivory">{row.points}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             )}
           </CardBody>
         </Card>

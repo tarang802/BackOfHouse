@@ -37,8 +37,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 15 | `feat: implement poker session tracking` | done | 8f5cd78 | lint, typecheck, ledger unit tests, build |
 | 16 | `feat: add match history and corrections` | done | 20f9324 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
 | 17 | `feat: add head-to-head rivalries` | done | b3ee588 | lint, typecheck, head-to-head unit tests, build |
-| 18 | `feat: implement tournament creation` | done | see 19 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
-| 19 | `feat: calculate tournament standings` | pending | | |
+| 18 | `feat: implement tournament creation` | done | c400d07 | lint, typecheck, bracket unit tests, PGlite lifecycle + knockout tests, build |
+| 19 | `feat: calculate tournament standings` | done | see 20 | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
 | 20 | `feat: implement player achievements` | pending | | |
 | 21 | `feat: add seasons and club activity` | pending | | |
 | 22 | `feat: add club administration and scoring settings` | pending | | |
@@ -202,6 +202,15 @@ following milestone's commit; the final hashes are listed in the release report)
 - Knockouts: 2/4/8/16/32 players, seeded (1v8, 4v5, 2v7, 3v6 …) when started. Each pairing
   is recorded from the bracket; results must be between the two paired players with a clear
   winner; the next round is drawn automatically and the final's winner is crowned.
+
+### 19 — Standings and champions
+- Points and rounds tournaments: live standings (points → wins; shared ranks). Completion is
+  refused until it is legitimate — at least one match, every round played, and a single
+  outright leader (“tied for first — play a decider”). SQL standings are tested to equal the
+  TypeScript engine on the same data.
+- Championship screen: restrained gold reveal with drifting suits, static with reduced motion.
+- Profiles gain “Silverware”: best finish (knockout places derive from the round lost) and
+  titles won.
 
 ## Known issues
 

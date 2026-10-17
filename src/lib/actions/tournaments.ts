@@ -67,3 +67,13 @@ export async function updateTournamentParticipantsAction(input: { tournamentId: 
   revalidatePath("/club", "layout");
   return { ok: true, data: null };
 }
+
+export async function completeTournamentAction(tournamentId: string): Promise<ActionResult<{ championId: string }>> {
+  if (!uuid.safeParse(tournamentId).success) return { ok: false, error: "Invalid tournament." };
+  await requireClub();
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("complete_tournament", { p_tournament_id: tournamentId });
+  if (error || !data) return fail(error, "The tournament could not be completed.");
+  revalidatePath("/club", "layout");
+  return { ok: true, data: { championId: data as string } };
+}
