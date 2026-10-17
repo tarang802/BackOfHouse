@@ -23,8 +23,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 01 | `chore: initialize application foundation` | done | a9099c4 | lint, typecheck, unit tests, build |
 | 02 | `style: establish premium design system` | done | f9b7010 | lint, typecheck, UI tests, build |
 | 03 | `feat: build premium landing page` | done | 9096f5b | lint, typecheck, landing tests, build, visual check (375px + desktop) |
-| 04 | `feat: implement authentication` | done | see 05 | lint, typecheck, validation/error-mapping tests, build |
-| 05 | `feat: add database schema and migrations` | pending | | |
+| 04 | `feat: implement authentication` | done | 33e9be9 | lint, typecheck, validation/error-mapping tests, build |
+| 05 | `feat: add database schema and migrations` | done | see 06 | lint, typecheck, PGlite schema tests, build |
 | 06 | `feat: secure database access and permissions` | pending | | |
 | 07 | `feat: implement player profiles` | pending | | |
 | 08 | `feat: add club membership and invitations` | pending | | |
@@ -81,6 +81,15 @@ following milestone's commit; the final hashes are listed in the release report)
   paths. Recovery responses never reveal whether an email has an account.
 - Errors from Supabase are mapped to short, safe messages (`src/lib/errors.ts`).
 - Without Supabase configuration the app shows a `/setup` page instead of crashing.
+
+### 05 — Schema
+- `supabase/migrations/20261017000100_schema.sql`: profiles, clubs, memberships, invitations,
+  game types, versioned scoring rules, seasons, tournaments (+participants, bracket), matches,
+  match participants, private poker ledger, audit log. Composite foreign keys stop any row
+  from pointing at another club's game, rules or tournament; `(club_id, submission_id)` is
+  unique so a submission can never be recorded twice.
+- Test harness: PGlite (Postgres in WebAssembly) + a small Supabase `auth`/`storage` shim run
+  the real migrations, so schema and policy tests need no Docker.
 
 ## Known issues
 
