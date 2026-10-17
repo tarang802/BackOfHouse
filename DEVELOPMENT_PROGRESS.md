@@ -24,8 +24,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 02 | `style: establish premium design system` | done | f9b7010 | lint, typecheck, UI tests, build |
 | 03 | `feat: build premium landing page` | done | 9096f5b | lint, typecheck, landing tests, build, visual check (375px + desktop) |
 | 04 | `feat: implement authentication` | done | 33e9be9 | lint, typecheck, validation/error-mapping tests, build |
-| 05 | `feat: add database schema and migrations` | done | see 06 | lint, typecheck, PGlite schema tests, build |
-| 06 | `feat: secure database access and permissions` | pending | | |
+| 05 | `feat: add database schema and migrations` | done | f337a00 | lint, typecheck, PGlite schema tests, build |
+| 06 | `feat: secure database access and permissions` | done | see 07 | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
 | 07 | `feat: implement player profiles` | pending | | |
 | 08 | `feat: add club membership and invitations` | pending | | |
 | 09 | `feat: build personalized club dashboard` | pending | | |
@@ -90,6 +90,15 @@ following milestone's commit; the final hashes are listed in the release report)
   unique so a submission can never be recorded twice.
 - Test harness: PGlite (Postgres in WebAssembly) + a small Supabase `auth`/`storage` shim run
   the real migrations, so schema and policy tests need no Docker.
+
+### 06 — Security
+- RLS on every table: members read their own club; anonymous users have no privileges.
+  Clients cannot write club data directly — only `security definer` functions can, after
+  re-checking `auth.uid()` membership and role. The only direct write is a user's own profile.
+- Invitation codes are visible to owners/admins only; emails never leave `auth.users`.
+- Server-side session helpers (`requireProfile`, `requireClub`) re-validate the active-club
+  cookie against real memberships on every request.
+- Tests prove cross-club isolation: guessed IDs return nothing, forged writes are refused.
 
 ## Known issues
 
