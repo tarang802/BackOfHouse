@@ -20,8 +20,8 @@ following milestone's commit; the final hashes are listed in the release report)
 
 | # | Commit message | Status | Hash | Checks |
 | --- | --- | --- | --- | --- |
-| 01 | `chore: initialize application foundation` | done | see 02 | lint, typecheck, build |
-| 02 | `style: establish premium design system` | pending | | |
+| 01 | `chore: initialize application foundation` | done | a9099c4 | lint, typecheck, unit tests, build |
+| 02 | `style: establish premium design system` | done | see 03 | lint, typecheck, UI tests, build |
 | 03 | `feat: build premium landing page` | pending | | |
 | 04 | `feat: implement authentication` | pending | | |
 | 05 | `feat: add database schema and migrations` | pending | | |
@@ -59,6 +59,14 @@ following milestone's commit; the final hashes are listed in the release report)
     always in force. No service-role key is needed at runtime.
   - Statistics (wins, streaks, head-to-head, achievements) are derived from match records
     rather than stored as counters, so voiding or correcting a match updates everything.
+
+### 02 — Design system
+- Tokens in `src/app/globals.css` (`@theme`): ink/surface/line greys, ivory text, casino green,
+  restrained gold, muted loss red. Cormorant Garamond (display) + Manrope (interface).
+- Primitives in `src/components/ui`: Button/ButtonLink, Field/Input/Select/Textarea, Card/Stat,
+  Badge/FormPill, Avatar (photo or suit monogram), Dialog (native `<dialog>`, sheet on phones),
+  EmptyState/Skeleton/GoldDivider/PageHeader, CountUp. Brand: Logo, PlayingCard.
+- Motion respects `prefers-reduced-motion` globally and via `useReducedMotion`.
 
 ## Known issues
 
