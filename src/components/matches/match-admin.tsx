@@ -97,12 +97,12 @@ export function MatchAdmin({
                         type="button"
                         aria-pressed={row.tiedWithAbove}
                         onClick={() => setOrder((o) => toggleTie(o, index))}
-                        className={`rounded-lg border px-2 py-1 text-[11px] uppercase ${row.tiedWithAbove ? "border-gold/60 text-gold" : "border-line text-faint"}`}
+                        className={`min-h-10 rounded-lg border px-2.5 text-[11px] uppercase ${row.tiedWithAbove ? "border-gold/60 text-gold" : "border-line text-faint"}`}
                       >
                         Tie
                       </button>
                     ) : null}
-                    <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => setOrder((o) => move(o, index, -1))} className="rounded-lg border border-line px-2 py-1 text-xs disabled:opacity-30">
+                    <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => setOrder((o) => move(o, index, -1))} className="size-10 rounded-lg border border-line text-xs disabled:opacity-30">
                       ↑
                     </button>
                     <button
@@ -110,7 +110,7 @@ export function MatchAdmin({
                       aria-label="Move down"
                       disabled={index === order.length - 1}
                       onClick={() => setOrder((o) => move(o, index, 1))}
-                      className="rounded-lg border border-line px-2 py-1 text-xs disabled:opacity-30"
+                      className="size-10 rounded-lg border border-line text-xs disabled:opacity-30"
                     >
                       ↓
                     </button>

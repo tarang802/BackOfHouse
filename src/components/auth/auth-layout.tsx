@@ -7,12 +7,12 @@ export function AuthLayout({ title, subtitle, children, footer }: { title: strin
     <div className="felt grid min-h-dvh lg:grid-cols-[1fr_1.1fr]">
       <div className="flex flex-col px-4 py-6 sm:px-10">
         <Logo />
-        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
+        <main id="main" className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
           <h1 className="animate-fade-up font-display text-[2.6rem] leading-none text-ivory">{title}</h1>
           {subtitle ? <p className="mt-3 text-[15px] leading-relaxed text-muted">{subtitle}</p> : null}
           <div className="mt-8">{children}</div>
           {footer ? <div className="mt-8 text-sm text-muted">{footer}</div> : null}
-        </div>
+        </main>
       </div>
       <div aria-hidden className="relative hidden overflow-hidden border-l border-line bg-ink-2 lg:block">
         <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgb(31_90_66/0.35),transparent_70%)]" />

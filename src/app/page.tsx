@@ -61,7 +61,7 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      <main>
+      <main id="main">
         {/* Hero */}
         <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-20 pt-10 sm:px-8 md:grid-cols-[1.15fr_0.85fr] md:pt-20">
           <div className="animate-fade-up">

@@ -135,7 +135,8 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className="flex flex-col items-center justify-center gap-1 text-[10px] font-medium tracking-wide"
+                aria-label={item.label}
+                className="flex min-h-11 flex-col items-center justify-center gap-1 text-[10px] font-medium tracking-wide"
               >
                 {isRecord ? (
                   <span className="-mt-5 flex size-12 items-center justify-center rounded-full border border-gold/50 bg-ivory text-ink shadow-[0_10px_30px_-10px_rgb(199_169_107/0.6)]">
@@ -151,8 +152,9 @@ export function AppShell({
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex flex-col items-center justify-center gap-1 text-[10px] font-medium tracking-wide text-muted"
+            className="flex min-h-11 flex-col items-center justify-center gap-1 text-[10px] font-medium tracking-wide text-muted"
             aria-haspopup="dialog"
+            aria-label="More pages"
           >
             <Menu className="size-5 text-faint" strokeWidth={1.6} />
             More

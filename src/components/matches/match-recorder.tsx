@@ -151,7 +151,7 @@ export function MatchRecorder({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+    <div className="grid gap-6 pb-24 lg:grid-cols-[1fr_340px] lg:items-start lg:pb-0">
       <div className="flex flex-col gap-6">
         {/* 1. Game */}
         <section aria-labelledby="step-game" className="rounded-[var(--radius-card)] border border-line bg-surface p-5 sm:p-6">
@@ -278,7 +278,7 @@ export function MatchRecorder({
                             aria-pressed={row.tiedWithAbove}
                             aria-label={`Tie ${player?.displayName} with the player above`}
                             className={cn(
-                              "flex h-9 items-center gap-1 rounded-lg border px-2 text-[11px] font-semibold uppercase tracking-wider",
+                              "flex h-10 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-semibold uppercase tracking-wider",
                               row.tiedWithAbove ? "border-gold/60 text-gold" : "border-line text-faint hover:text-ivory",
                             )}
                           >
@@ -450,7 +450,7 @@ function IconButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex size-9 items-center justify-center rounded-lg border border-line text-muted transition-colors hover:text-ivory disabled:opacity-30"
+      className="flex size-10 items-center justify-center rounded-lg border border-line text-muted transition-colors hover:text-ivory disabled:opacity-30"
     >
       {children}
     </button>

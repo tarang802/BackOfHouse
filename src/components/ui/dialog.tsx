@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -24,6 +24,7 @@ export function Dialog({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -43,7 +44,7 @@ export function Dialog({
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      aria-labelledby="dialog-title"
+      aria-labelledby={titleId}
       className={cn(
         "m-0 mt-auto w-full max-w-none rounded-t-3xl border border-line bg-surface p-0 text-ivory shadow-2xl open:animate-fade-up",
         "sm:m-auto sm:max-w-lg sm:rounded-3xl",
@@ -55,7 +56,7 @@ export function Dialog({
         <div className="flex max-h-[min(90dvh,760px)] flex-col">
           <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
             <div>
-              <h2 id="dialog-title" className="font-display text-2xl leading-tight">
+              <h2 id={titleId} className="font-display text-2xl leading-tight">
                 {title}
               </h2>
               {description ? <p className="mt-1 text-sm text-muted">{description}</p> : null}

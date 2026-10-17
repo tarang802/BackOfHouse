@@ -41,8 +41,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 19 | `feat: calculate tournament standings` | done | d019e5f | lint, typecheck, standings/finish unit tests, PGlite completion tests (SQL ≡ TS), build |
 | 20 | `feat: implement player achievements` | done | 444a772 | lint, typecheck, achievement unit tests, build |
 | 21 | `feat: add seasons and club activity` | done | 64ea298 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
-| 22 | `feat: add club administration and scoring settings` | done | see 23 | lint, typecheck, PGlite admin/permission tests, scoring panel UI tests, build |
-| 23 | `style: polish responsive layouts and accessibility` | pending | | |
+| 22 | `feat: add club administration and scoring settings` | done | 8d13fbf | lint, typecheck, PGlite admin/permission tests, scoring panel UI tests, build |
+| 23 | `style: polish responsive layouts and accessibility` | done | see 24 | lint, typecheck, axe audits (jsdom), build, visual check of public pages at 375px |
 | 24 | `test: harden scoring and authorization flows` | pending | | |
 | 25 | `docs: finalize release and deployment guide` | pending | | |
 
@@ -239,6 +239,16 @@ following milestone's commit; the final hashes are listed in the release report)
   Poker only), archiving custom games, removing members (admins cannot remove admins or the
   owner). Members can leave; removed players' history is kept.
 - Every administrative change writes an audit entry, shown to admins on the settings page.
+
+### 23 — Responsive and accessibility polish
+- Every page now has a `main` landmark that the skip link targets; dialogs get unique,
+  correctly linked titles; leaderboard tabs follow the ARIA tab pattern (arrow keys,
+  `tabpanel`); unranked rows are announced as “Unranked”.
+- Touch targets on the recorder (move/tie buttons) and bottom navigation are ≥ 40–44px; the
+  recorder reserves space for its docked save bar on phones.
+- In-club 404 keeps the navigation. Automated axe checks cover the landing page, recorder,
+  leaderboard table and player directory (contrast is checked manually: ivory #F2EFE6 on
+  #090A0A ≈ 17:1, muted #969990 ≈ 6.9:1).
 
 ## Known issues
 

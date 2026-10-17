@@ -44,7 +44,19 @@ export function LeaderboardExplorer({ views, initialView }: { views: Leaderboard
             key={v.id}
             role="tab"
             type="button"
+            id={`board-tab-${v.id}`}
+            aria-controls="board-panel"
             aria-selected={v.id === view.id}
+            tabIndex={v.id === view.id ? 0 : -1}
+            onKeyDown={(event) => {
+              const index = views.findIndex((x) => x.id === view.id);
+              const next = event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
+              if (next === null) return;
+              event.preventDefault();
+              const target = views[(next + views.length) % views.length];
+              setViewId(target.id);
+              document.getElementById(`board-tab-${target.id}`)?.focus();
+            }}
             onClick={() => setViewId(v.id)}
             className={cn(
               "h-10 shrink-0 rounded-full border px-4 text-sm transition-colors",
@@ -56,6 +68,7 @@ export function LeaderboardExplorer({ views, initialView }: { views: Leaderboard
         ))}
       </div>
 
+      <div id="board-panel" role="tabpanel" aria-labelledby={`board-tab-${view.id}`} className="flex flex-col gap-5">
       <p className="text-sm text-muted">{view.description}</p>
 
       <div className="grid gap-3 sm:grid-cols-[1fr_200px]">
@@ -90,6 +103,7 @@ export function LeaderboardExplorer({ views, initialView }: { views: Leaderboard
       ) : (
         <LeaderboardTable rows={rows} caption={`${view.label} leaderboard`} />
       )}
+      </div>
     </div>
   );
 }

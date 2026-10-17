@@ -21,7 +21,7 @@ export type LeaderboardRow = {
 };
 
 function RankMark({ rank }: { rank: number | null }) {
-  if (rank === null) return <span className="text-xs text-faint">—</span>;
+  if (rank === null) return <span className="text-xs text-faint"><span aria-hidden>—</span><span className="sr-only">Unranked</span></span>;
   return (
     <span
       className={cn(

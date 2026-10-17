@@ -20,7 +20,7 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
   return (
     <div className="felt min-h-dvh px-4 py-6 sm:px-10">
       <Logo />
-      <div className="mx-auto max-w-md py-10">
+      <main id="main" className="mx-auto max-w-md py-10">
         <ol className="mb-10 flex items-center gap-3" aria-label="Setup progress">
           {["Player card", "Your club"].map((label, index) => (
             <li key={label} className="flex flex-1 items-center gap-3" aria-current={step === index + 1 ? "step" : undefined}>
@@ -57,7 +57,7 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
             </div>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }
