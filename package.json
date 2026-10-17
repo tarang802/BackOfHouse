@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run lint && npm run typecheck && npm run test"
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "db:seed": "node --env-file=.env.local scripts/seed-demo.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

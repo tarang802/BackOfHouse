@@ -43,8 +43,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 21 | `feat: add seasons and club activity` | done | 64ea298 | lint, typecheck, PGlite season tests (time-zone boundaries, archive), build |
 | 22 | `feat: add club administration and scoring settings` | done | 8d13fbf | lint, typecheck, PGlite admin/permission tests, scoring panel UI tests, build |
 | 23 | `style: polish responsive layouts and accessibility` | done | 44b7f72 | lint, typecheck, axe audits (jsdom), build, visual check of public pages at 375px |
-| 24 | `test: harden scoring and authorization flows` | done | see 25 | lint (0 warnings), typecheck, full suite, build |
-| 25 | `docs: finalize release and deployment guide` | pending | | |
+| 24 | `test: harden scoring and authorization flows` | done | e54bef8 | lint (0 warnings), typecheck, full suite, build |
+| 25 | `docs: finalize release and deployment guide` | done | this commit (see `git log`) | lint, typecheck, full suite, build, push verified |
 
 ## Milestone notes
 
@@ -263,10 +263,40 @@ following milestone's commit; the final hashes are listed in the release report)
   which is not available from this environment. The flow test above covers the same journey
   at the database layer.
 
-## Known issues
+### 25 — Release documentation
+- README (features, setup, environment variables, scripts, scoring and security summaries),
+  `docs/DEPLOYMENT.md` (Supabase + Vercel step by step, auth URLs, smoke test),
+  `docs/DATABASE.md` (tables, constraints, security model, function reference, setup),
+  development-only demo seed script (`npm run db:seed`, refuses non-local URLs by default).
 
-- None yet.
+## Final verification (local)
+
+| Check | Result |
+| --- | --- |
+| `npm run lint` | 0 errors, 0 warnings |
+| `npm run typecheck` | passes |
+| `npm test` | 35 files, 199 tests passing (unit, UI, axe, PGlite database incl. RLS) |
+| `npm run build` | passes (Next.js 16.3.5, Turbopack) |
+| Each milestone | checked in isolation (all other files stashed) before committing; every push verified against `git ls-remote` |
+
+## Known issues and limitations
+
+- **Not connected to a live backend from this environment.** No Supabase project or Vercel
+  account was available, so auth emails, storage uploads, realtime and the deployed site have
+  not been exercised against real services. The SQL itself is exercised by the PGlite tests.
+- **No browser end-to-end (Playwright) suite.** It needs a live Supabase project; the
+  database-level journey test (`tests/db/flow.test.ts`) covers the same flow.
+- **Next.js is pinned to 16.3.5.** 16.4.2 was scaffolded, but its package could not be
+  downloaded on this network; 16.3.5 was used from the local npm cache. Upgrading later is a
+  one-line change followed by `npm run check`.
+- npm reports an un-run install script for `unrs-resolver` (an ESLint resolver dependency);
+  linting works without it.
+- Club pages derive statistics from all of a club's matches on each request. That is instant
+  for a friend group (hundreds or a few thousand matches); a very large club would want
+  database-side aggregation.
 
 ## Deployment status
 
-- Not deployed. See README once milestone 25 lands.
+- **Not deployed.** Follow `docs/DEPLOYMENT.md`. Required from the owner: a Supabase project
+  (run the migrations, set auth URLs) and a Vercel project with the three `NEXT_PUBLIC_*`
+  variables.
