@@ -2,11 +2,13 @@ import { ArrowLeft, CircleCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MatchAdmin } from "@/components/matches/match-admin";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { FormMessage } from "@/components/ui/field";
-import { getGameTypes, getMatch, getMembers, getScoringRules, memberLookup } from "@/lib/data/club-data";
+import { getGameTypes, getMatch, getMatches, getMembers, getScoringRules, memberLookup } from "@/lib/data/club-data";
+import { getTournament } from "@/lib/data/competition-data";
 import { requireClub } from "@/lib/data/session";
 import { describeScoringRule, ordinal } from "@/lib/domain/scoring";
 import { formatDateTime } from "@/lib/utils";
@@ -16,10 +18,21 @@ export const metadata: Metadata = { title: "Match" };
 export default async function MatchDetailPage({ params, searchParams }: PageProps<"/club/matches/[matchId]">) {
   const { matchId } = await params;
   const query = await searchParams;
-  const { club } = await requireClub();
+  const { club, isAdmin } = await requireClub();
   const match = await getMatch(club.id, matchId);
   if (!match) notFound();
-  const [members, games, rules] = await Promise.all([getMembers(club.id), getGameTypes(club.id), getScoringRules(club.id)]);
+  const [members, games, rules, all, tournament] = await Promise.all([
+    getMembers(club.id),
+    getGameTypes(club.id),
+    getScoringRules(club.id),
+    getMatches(club.id),
+    match.tournamentId ? getTournament(club.id, match.tournamentId) : Promise.resolve(null),
+  ]);
+  const replacement = all.find((m) => m.correctsMatchId === match.id);
+  const locked =
+    tournament?.status === "completed"
+      ? `Part of ${tournament.name}, which is complete — its results are final.`
+      : null;
   const lookup = memberLookup(members);
   const game = games.find((g) => g.id === match.gameTypeId);
   const rule = rules.find((r) => r.id === match.scoringRuleId);
@@ -63,7 +76,35 @@ export default async function MatchDetailPage({ params, searchParams }: PageProp
         <FormMessage>
           This match was voided{match.voidedAt ? ` on ${formatDateTime(match.voidedAt, club.timezone)}` : ""}: {match.voidReason}. It no
           longer counts toward any statistics.
+          {replacement ? (
+            <>
+              {" "}
+              <Link href={`/club/matches/${replacement.id}`} className="underline underline-offset-4">
+                See the corrected result
+              </Link>
+              .
+            </>
+          ) : null}
         </FormMessage>
+      ) : null}
+      {match.correctsMatchId ? (
+        <p className="text-sm text-muted">
+          This result replaces an earlier entry.{" "}
+          <Link href={`/club/matches/${match.correctsMatchId}`} className="text-ivory underline-offset-4 hover:underline">
+            View the original
+          </Link>
+        </p>
+      ) : null}
+      {isAdmin && !voided ? (
+        <MatchAdmin
+          matchId={match.id}
+          participants={match.participants.map((p) => ({ profileId: p.profileId, placement: p.placement }))}
+          players={match.participants.map((p) => {
+            const m = lookup(p.profileId);
+            return { profileId: m.profileId, displayName: m.displayName, avatarUrl: m.avatarUrl, emblem: m.emblem };
+          })}
+          locked={locked}
+        />
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">

@@ -34,8 +34,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 12 | `feat: add match recording flow` | done | 8f3eea5 | lint, typecheck, recorder UI tests, finish-order + schema tests, build |
 | 13 | `feat: persist match results transactionally` | done | daf81cd | lint, typecheck, PGlite record_match tests (scoring parity, idempotency, validation), build |
 | 14 | `feat: implement bluff statistics` | done | 21bc97d | lint, typecheck, head-to-head unit tests, build |
-| 15 | `feat: implement poker session tracking` | done | see 16 | lint, typecheck, ledger unit tests, build |
-| 16 | `feat: add match history and corrections` | pending | | |
+| 15 | `feat: implement poker session tracking` | done | 8f5cd78 | lint, typecheck, ledger unit tests, build |
+| 16 | `feat: add match history and corrections` | done | see 17 | lint, typecheck, PGlite void/correct tests, history filter tests, build |
 | 17 | `feat: add head-to-head rivalries` | pending | | |
 | 18 | `feat: implement tournament creation` | pending | | |
 | 19 | `feat: calculate tournament standings` | pending | | |
@@ -177,6 +177,14 @@ following milestone's commit; the final hashes are listed in the release report)
   or Poker only) and the page says which applies.
 - Optional private session accounting (buy-in / cash-out per player) summarised per player.
   It is clearly labelled, never affects points, and nothing in the app moves money.
+
+### 16 — History and corrections
+- `/club/matches`: search plus game, player, tournament and status filters, paged.
+- Owners/admins can **void** a match (kept in history with who/when/why, excluded from all
+  statistics) or **correct** it (original voided, linked replacement recorded under the
+  original scoring version, poker ledger carried over) — atomically, with an audit entry.
+  Corrections are idempotent per submission and a failed correction leaves the original intact.
+- Completed tournaments are frozen; knockout corrections roll back unplayed later rounds.
 
 ## Known issues
 
