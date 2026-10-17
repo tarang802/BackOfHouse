@@ -26,8 +26,8 @@ following milestone's commit; the final hashes are listed in the release report)
 | 04 | `feat: implement authentication` | done | 33e9be9 | lint, typecheck, validation/error-mapping tests, build |
 | 05 | `feat: add database schema and migrations` | done | f337a00 | lint, typecheck, PGlite schema tests, build |
 | 06 | `feat: secure database access and permissions` | done | bf66f7f | lint, typecheck, PGlite RLS / cross-club isolation tests, build |
-| 07 | `feat: implement player profiles` | done | see 08 | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
-| 08 | `feat: add club membership and invitations` | pending | | |
+| 07 | `feat: implement player profiles` | done | 1d1a73e | lint, typecheck, profile validation + PGlite profile/avatar tests, build |
+| 08 | `feat: add club membership and invitations` | done | see 09 | lint, typecheck, PGlite club/invitation tests, build |
 | 09 | `feat: build personalized club dashboard` | pending | | |
 | 10 | `feat: implement leaderboard engine` | pending | | |
 | 11 | `feat: implement player directory` | pending | | |
@@ -108,6 +108,14 @@ following milestone's commit; the final hashes are listed in the release report)
   folder. Without a photo, players get a monogram card with their suit.
 - Club shell (desktop sidebar, mobile header + bottom navigation) and the player profile page
   (identity card; statistics are added with the leaderboard engine).
+
+### 08 — Clubs and invitations
+- `create_club` makes the creator owner and seeds Bluff, Poker, Teen Patti, scoring v1 (+3/+1)
+  and a first invitation. Club time zone is taken from the creator's browser.
+- Invitations: 8-character codes without look-alike characters, optional expiry and use
+  limits, revocable; shareable `/join/<code>` links carry new users through sign-up and
+  profile creation straight to the join form. Joining is idempotent.
+- Members can belong to several clubs; a validated cookie remembers the active one.
 
 ## Known issues
 

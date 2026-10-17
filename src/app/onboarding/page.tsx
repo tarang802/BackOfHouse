@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
+import { ClubChoice } from "@/components/onboarding/club-forms";
 import { ProfileForm } from "@/components/onboarding/profile-form";
 import { getMyClubs, getMyProfile, requireUser } from "@/lib/data/session";
 import { cn } from "@/lib/utils";
@@ -49,8 +50,11 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
           <>
             <h1 className="font-display text-[2.6rem] leading-none text-ivory">Find your table.</h1>
             <p className="mt-3 text-[15px] text-muted">
-              Your player card is ready. Opening or joining a club comes next.
+              Open a club for your group, or join one with the code a friend shared.
             </p>
+            <div className="mt-8">
+              <ClubChoice initialCode={code} />
+            </div>
           </>
         )}
       </div>
